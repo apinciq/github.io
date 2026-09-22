@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aidan Pinciq — Portfolio</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* MAIN MENU VIEW */
+    #main-menu {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 48px 32px;
+    }
+
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #888;
+      letter-spacing: 0.12em;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: "";
+      height: 1px;
+      width: 40px;
+      background-color: #fff;
+      opacity: 0.4;
+    }
+
+    .menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      list-style: none;
+    }
+
+    .menu-list li {
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1.1;
+      text-transform: uppercase;
+      color: #aaa;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: fit-content;
+    }
+
+    .menu-list li:hover {
+      color: #ffffff;
+      transform: translateX(8px);
+    }
+
+    /* REEL / FEED VIEWS */
+    .reel-view {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: radial-gradient(circle at center, #111 0%, #000 70%);
+    }
+
+    .view-header {
+      position: absolute;
+      top: 28px;
+      left: 32px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 20px;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    /* Single-Video Scroll Snap Feed with Next Video Peak */
+    .video-feed {
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+      padding-bottom: 120px;
+    }
+
+    .video-feed::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Video Snap Card Setup */
+    .video-card {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      flex-shrink: 0;
+      width: 100vw;
+      height: 85vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .card-inner {
+      width: 85%;
+      max-width: 520px;
+      background-color: #0d0d0d;
+      border: 2px solid #fff;
+      padding: 12px;
+      position: relative;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+      transition: transform 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+      opacity: 0.4;
+    }
+
+    .video-card.active .card-inner {
+      transform: scale(1.02);
+      border-color: #ffffff;
+      box-shadow: 0 0 35px rgba(255, 255, 255, 0.35);
+      opacity: 1;
+    }
+
+    .card-label {
+      position: absolute;
+      top: -12px;
+      right: 14px;
+      background: #fff;
+      color: #000;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 3px 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 2px;
+      z-index: 5;
+    }
+
+    .video-card video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* 16:9 Aspect Ratio Responsive Wrapper */
+    .embed-container {
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding-bottom: 56.25%;
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .video-title {
+      margin-top: 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #fff;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+
+    /* Scroll Down Indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+
+    .scroll-indicator span {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #fff;
+    }
+
+    .scroll-arrow {
+      width: 12px;
+      height: 12px;
+      border-right: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(45deg);
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: rotate(45deg) translate(0, 0); }
+      50% { transform: rotate(45deg) translate(4px, 4px); }
+    }
+
+    /* PHOTOGRAPHY GRID */
+    .photo-grid-container {
+      height: 100vh;
+      overflow-y: auto;
+      padding: 100px 32px 40px 32px;
+    }
+
+    .photo-grid-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .grid-post {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      background-color: #0d0d0d;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .grid-post:hover {
+      transform: scale(1.02);
+      border-color: #fff;
+    }
+
+    .grid-post img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .post-title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.85));
+      padding: 14px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #fff;
+    }
+
+    /* CAROUSEL MODAL OVERLAY */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 101;
+    }
+
+    .modal-content {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 90%;
+      max-width: 800px;
+      height: 80vh;
+    }
+
+    .carousel-slide {
+      position: relative;
+      max-width: 100%;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .carousel-slide img {
+      max-width: 100%;
+      max-height: 72vh;
+      object-fit: contain;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .carousel-counter {
+      margin-top: 12px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: #888;
+    }
+
+    .carousel-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      font-size: 18px;
+      padding: 12px 16px;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: background 0.2s ease, color 0.2s ease;
+      user-select: none;
+    }
+
+    .carousel-btn:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .prev-btn { margin-right: 20px; }
+    .next-btn { margin-left: 20px; }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #fff;
+      letter-spacing: 0.08em;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 20px;
+    }
+
+    .footer a {
+      color: #fff;
+      text-decoration: none;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+  <main id="main-menu">
+    <div class="content-section">
+      <section>
+        <div class="section-label">Work</div>
+        <ul class="menu-list">
+          <li onclick="openPage('ads-view')">Advertisements</li>
+          <li onclick="openPage('music-videos-view')">Music Videos</li>
+          <li onclick="openPage('photography-view')">Photography</li>
+          <li>Design</li>
+        </ul>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <span>©2026 AIDAN PINCIQ</span>
+      <a href="#contact">Contact</a>
+    </footer>
+  </main>
+
+
+  <main id="ads-view" class="reel-view hidden">
+    <div class="view-header">
+      <button class="back-btn" onclick="openPage('main-menu')">← Back to Menu</button>
+      <div class="section-label" style="margin-bottom: 0;">Advertisements</div>
+    </div>
+
+    <div class="scroll-indicator">
+      <span>SCROLL</span>
+      <div class="scroll-arrow"></div>
+    </div>
+
+    <div class="video-feed" id="adsFeed">
+      <div class="video-card active">
+        <div class="card-inner">
+          <span class="card-label">MP4-01</span>
+          <video loop muted playsinline controls>
+            <source src="Advertisements/ad1.mp4" type="video/mp4">
+          </video>
+          <div class="video-title">aberrant campaign 1</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">MP4-02</span>
+          <video loop muted playsinline controls>
+            <source src="Advertisements/ad2.mp4" type="video/mp4">
+          </video>
+          <div class="video-title">aberrant campaign 2</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">MP4-03</span>
+          <video loop muted playsinline controls>
+            <source src="Advertisements/ad3.mp4" type="video/mp4">
+          </video>
+          <div class="video-title">marivanti noise</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">MP4-04</span>
+          <video loop muted playsinline controls>
+            <source src="Advertisements/ad4.mp4" type="video/mp4">
+          </video>
+          <div class="video-title">Milan - NEW SOUL</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">MP4-05</span>
+          <video loop muted playsinline controls>
+            <source src="Advertisements/ad5.mp4" type="video/mp4">
+          </video>
+          <div class="video-title">Milan - Glory N Affection</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">MP4-06</span>
+          <video loop muted playsinline controls>
+            <source src="Advertisements/ad6.mp4" type="video/mp4">
+          </video>
+          <div class="video-title">Trevoski - Campaign</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">MP4-07</span>
+          <video loop muted playsinline controls>
+            <source src="Advertisements/ad7.mp4" type="video/mp4">
+          </video>
+          <div class="video-title">Trevoski - G-shock</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <main id="music-videos-view" class="reel-view hidden">
+    <div class="view-header">
+      <button class="back-btn" onclick="openPage('main-menu')">← Back to Menu</button>
+      <div class="section-label" style="margin-bottom: 0;">Music Videos</div>
+    </div>
+
+    <div class="scroll-indicator">
+      <span>SCROLL</span>
+      <div class="scroll-arrow"></div>
+    </div>
+
+    <div class="video-feed" id="mvFeed">
+      <div class="video-card active">
+        <div class="card-inner">
+          <span class="card-label">YT-01</span>
+          <div class="embed-container">
+            <div id="player-1" class="yt-player" data-video-id="d0cDgYvJu-4"></div>
+          </div>
+          <div class="video-title">Music Video 01</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-02</span>
+          <div class="embed-container">
+            <div id="player-2" class="yt-player" data-video-id="9pz682uBrSM"></div>
+          </div>
+          <div class="video-title">EA TJ - Flyest (Official Music Video)</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-03</span>
+          <div class="embed-container">
+            <div id="player-3" class="yt-player" data-video-id="XVH0pTXk-WU"></div>
+          </div>
+          <div class="video-title">EVILLAIRE - CODE PROD. SCKLOMO (Official Video)</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-04</span>
+          <div class="embed-container">
+            <div id="player-4" class="yt-player" data-video-id="mtIvsjFNO80"></div>
+          </div>
+          <div class="video-title">Music Video 04</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-05</span>
+          <div class="embed-container">
+            <div id="player-5" class="yt-player" data-video-id="DDQtMDGRG0A"></div>
+          </div>
+          <div class="video-title">Music Video 05</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-06</span>
+          <div class="embed-container">
+            <div id="player-6" class="yt-player" data-video-id="LJ9yZBeGhes"></div>
+          </div>
+          <div class="video-title">Music Video 06</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-07</span>
+          <div class="embed-container">
+            <div id="player-7" class="yt-player" data-video-id="lwLINgxDWMo"></div>
+          </div>
+          <div class="video-title">Gotti Moe - Trappp (Official Music Video)</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-08</span>
+          <div class="embed-container">
+            <div id="player-8" class="yt-player" data-video-id="k8vFDFYwlhg"></div>
+          </div>
+          <div class="video-title">Music Video 08</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-09</span>
+          <div class="embed-container">
+            <div id="player-9" class="yt-player" data-video-id="NztTvjo-2IM"></div>
+          </div>
+          <div class="video-title">milan - Time Blind (Official Video)</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-10</span>
+          <div class="embed-container">
+            <div id="player-10" class="yt-player" data-video-id="iT8kvnaCnwg"></div>
+          </div>
+          <div class="video-title">Music Video 10</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-11</span>
+          <div class="embed-container">
+            <div id="player-11" class="yt-player" data-video-id="UB3ydotiHcM"></div>
+          </div>
+          <div class="video-title">Music Video 11</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-12</span>
+          <div class="embed-container">
+            <div id="player-12" class="yt-player" data-video-id="k1XQJKYKPpY"></div>
+          </div>
+          <div class="video-title">Music Video 12</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-13</span>
+          <div class="embed-container">
+            <div id="player-13" class="yt-player" data-video-id="JpcVedImqUE"></div>
+          </div>
+          <div class="video-title">Music Video 13</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-14</span>
+          <div class="embed-container">
+            <div id="player-14" class="yt-player" data-video-id="1UEZf5uywX4"></div>
+          </div>
+          <div class="video-title">Music Video 14</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-15</span>
+          <div class="embed-container">
+            <div id="player-15" class="yt-player" data-video-id="unIDsve-L6k"></div>
+          </div>
+          <div class="video-title">Music Video 15</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-16</span>
+          <div class="embed-container">
+            <div id="player-16" class="yt-player" data-video-id="jK_KdgE63GE"></div>
+          </div>
+          <div class="video-title">Music Video 16</div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="card-inner">
+          <span class="card-label">YT-17</span>
+          <div class="embed-container">
+            <div id="player-17" class="yt-player" data-video-id="rZD-kQULCD8"></div>
+          </div>
+          <div class="video-title">Music Video 17</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <main id="photography-view" class="reel-view hidden">
+    <div class="view-header">
+      <button class="back-btn" onclick="openPage('main-menu')">← Back to Menu</button>
+      <div class="section-label" style="margin-bottom: 0;">Photography</div>
+    </div>
+
+    <div class="photo-grid-container">
+      <div class="photo-grid" id="photoGrid"></div>
+    </div>
+  </main>
+
+
+  <div id="carousel-modal" class="modal hidden">
+    <button class="close-modal" onclick="closeCarousel()">✕</button>
+    <div class="modal-content">
+      <button class="carousel-btn prev-btn" onclick="changeSlide(-1)">❮</button>
+      
+      <div class="carousel-slide">
+        <img id="carousel-img" src="" alt="Gallery Image">
+        <div class="carousel-counter" id="carouselCounter">1 / 1</div>
+      </div>
+
+      <button class="carousel-btn next-btn" onclick="changeSlide(1)">❯</button>
+    </div>
+  </div>
+
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <script>
+    const ytPlayers = {};
+
+    function onYouTubeIframeAPIReady() {
+      document.querySelectorAll('.yt-player').forEach(element => {
+        const id = element.id;
+        const videoId = element.getAttribute('data-video-id');
+
+        ytPlayers[id] = new YT.Player(id, {
+          videoId: videoId,
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            rel: 0,
+            modestbranding: 1,
+            playsinline: 1
+          }
+        });
+      });
+    }
+
+    function openPage(pageId) {
+      document.getElementById('main-menu').classList.add('hidden');
+      document.getElementById('ads-view').classList.add('hidden');
+      document.getElementById('music-videos-view').classList.add('hidden');
+      document.getElementById('photography-view').classList.add('hidden');
+
+      const selectedPage = document.getElementById(pageId);
+      if (selectedPage) {
+        selectedPage.classList.remove('hidden');
+      }
+
+      if (pageId === 'main-menu') {
+        pauseAllVideos();
+      }
+    }
+
+    function pauseAllVideos() {
+      document.querySelectorAll('video').forEach(v => v.pause());
+      Object.values(ytPlayers).forEach(player => {
+        if (player && typeof player.pauseVideo === 'function') {
+          player.pauseVideo();
+        }
+      });
+    }
+
+    function setupScrollObserver(feedId) {
+      const feed = document.getElementById(feedId);
+      if (!feed) return;
+
+      const cards = feed.querySelectorAll('.video-card');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const video = entry.target.querySelector('video');
+          const ytContainer = entry.target.querySelector('.yt-player');
+
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            
+            if (video) {
+              video.play().catch(() => {});
+            }
+
+            if (ytContainer && ytPlayers[ytContainer.id]) {
+              const player = ytPlayers[ytContainer.id];
+              if (typeof player.playVideo === 'function') {
+                player.playVideo();
+              }
+            }
+          } else {
+            entry.target.classList.remove('active');
+
+            if (video) {
+              video.pause();
+            }
+
+            if (ytContainer && ytPlayers[ytContainer.id]) {
+              const player = ytPlayers[ytContainer.id];
+              if (typeof player.pauseVideo === 'function') {
+                player.pauseVideo();
+              }
+            }
+          }
+        });
+      }, {
+        root: feed,
+        threshold: 0.6
+      });
+
+      cards.forEach(card => observer.observe(card));
+    }
+
+    setupScrollObserver('adsFeed');
+    setupScrollObserver('mvFeed');
+
+    /* FULL PHOTOGRAPHY GALLERIES DATA */
+    const photoGalleries = [
+      {
+        folderName: "Aberrant Campaign",
+        coverImg: "Aberrant Campaign/1.png",
+        images: [
+          "Aberrant Campaign/1.png",
+          "Aberrant Campaign/2.png",
+          "Aberrant Campaign/3.png",
+          "Aberrant Campaign/4.png"
+        ]
+      },
+      {
+        folderName: "Maxon",
+        coverImg: "Maxon/1.jpg",
+        images: [
+          "Maxon/1.jpg",
+          "Maxon/2.jpg",
+          "Maxon/3.jpg"
+        ]
+      },
+      {
+        folderName: "Sk8, Dior, SSS",
+        coverImg: "Sk8, Dior, SSS/1.jpg",
+        images: [
+          "Sk8, Dior, SSS/1.jpg",
+          "Sk8, Dior, SSS/2.jpg",
+          "Sk8, Dior, SSS/3.jpg",
+          "Sk8, Dior, SSS/4.jpg",
+          "Sk8, Dior, SSS/5.jpg",
+          "Sk8, Dior, SSS/6.jpg",
+          "Sk8, Dior, SSS/7.jpg",
+          "Sk8, Dior, SSS/8.jpg",
+          "Sk8, Dior, SSS/9.jpg"
+        ]
+      },
+      {
+        folderName: "PrayForYouth",
+        coverImg: "PrayForYouth/1.jpg",
+        images: [
+          "PrayForYouth/1.jpg",
+          "PrayForYouth/2.jpg",
+          "PrayForYouth/3.jpg",
+          "PrayForYouth/4.jpg",
+          "PrayForYouth/5.jpg"
+        ]
+      },
+      {
+        folderName: "Milan",
+        coverImg: "Milan/1.jpg",
+        images: [
+          "Milan/1.jpg",
+          "Milan/2.jpg",
+          "Milan/3.jpg",
+          "Milan/4.jpg"
+        ]
+      },
+      {
+        folderName: "Percaso",
+        coverImg: "Percaso/1.jpg",
+        images: [
+          "Percaso/1.jpg",
+          "Percaso/2.jpg",
+          "Percaso/3.jpg",
+          "Percaso/4.jpg",
+          "Percaso/5.jpg",
+          "Percaso/6.jpg",
+          "Percaso/7.jpg"
+        ]
+      }
+    ];
+
+    const gridContainer = document.getElementById('photoGrid');
+    if (gridContainer) {
+      photoGalleries.forEach((gallery, index) => {
+        const post = document.createElement('div');
+        post.className = 'grid-post';
+        post.onclick = () => openCarousel(index);
+
+        post.innerHTML = `
+          <img src="${gallery.coverImg}" alt="${gallery.folderName}">
+          <div class="carousel-badge">❐ ${gallery.images.length}</div>
+          <div class="post-title">${gallery.folderName}</div>
+        `;
+        gridContainer.appendChild(post);
+      });
+    }
+
+    let currentGalleryIndex = 0;
+    let currentImageIndex = 0;
+
+    function openCarousel(galleryIndex) {
+      currentGalleryIndex = galleryIndex;
+      currentImageIndex = 0;
+      updateCarouselImage();
+      document.getElementById('carousel-modal').classList.remove('hidden');
+    }
+
+    function closeCarousel() {
+      document.getElementById('carousel-modal').classList.add('hidden');
+    }
+
+    function changeSlide(direction) {
+      const gallery = photoGalleries[currentGalleryIndex];
+      currentImageIndex += direction;
+
+      if (currentImageIndex < 0) {
+        currentImageIndex = gallery.images.length - 1;
+      } else if (currentImageIndex >= gallery.images.length) {
+        currentImageIndex = 0;
+      }
+
+      updateCarouselImage();
+    }
+
+    function updateCarouselImage() {
+      const gallery = photoGalleries[currentGalleryIndex];
+      const imgElement = document.getElementById('carousel-img');
+      const counterElement = document.getElementById('carouselCounter');
+
+      imgElement.src = gallery.images[currentImageIndex];
+      counterElement.innerText = `${currentImageIndex + 1} / ${gallery.images.length}`;
+    }
+  </script>
+
+</body>
+</html>
