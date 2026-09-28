@@ -185,13 +185,6 @@
       z-index: 5;
     }
 
-    .video-card video {
-      width: 100%;
-      height: auto;
-      display: block;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
     /* 16:9 Aspect Ratio Responsive Wrapper */
     .embed-container {
       position: relative;
@@ -463,70 +456,60 @@
     <div class="video-feed" id="adsFeed">
       <div class="video-card active">
         <div class="card-inner">
-          <span class="card-label">MP4-01</span>
-          <video loop muted playsinline controls>
-            <source src="Advertisements/ad1.mp4" type="video/mp4">
-          </video>
+          <span class="card-label">YT-AD-01</span>
+          <div class="embed-container">
+            <div id="ad-player-1" class="yt-player" data-video-id="lDzVOsax3Wc"></div>
+          </div>
           <div class="video-title">aberrant campaign 1</div>
         </div>
       </div>
 
       <div class="video-card">
         <div class="card-inner">
-          <span class="card-label">MP4-02</span>
-          <video loop muted playsinline controls>
-            <source src="Advertisements/ad2.mp4" type="video/mp4">
-          </video>
+          <span class="card-label">YT-AD-02</span>
+          <div class="embed-container">
+            <div id="ad-player-2" class="yt-player" data-video-id="iZDWpTKR7pg"></div>
+          </div>
           <div class="video-title">aberrant campaign 2</div>
         </div>
       </div>
 
       <div class="video-card">
         <div class="card-inner">
-          <span class="card-label">MP4-03</span>
-          <video loop muted playsinline controls>
-            <source src="Advertisements/ad3.mp4" type="video/mp4">
-          </video>
-          <div class="video-title">marivanti noise</div>
-        </div>
-      </div>
-
-      <div class="video-card">
-        <div class="card-inner">
-          <span class="card-label">MP4-04</span>
-          <video loop muted playsinline controls>
-            <source src="Advertisements/ad4.mp4" type="video/mp4">
-          </video>
+          <span class="card-label">YT-AD-04</span>
+          <div class="embed-container">
+            <div id="ad-player-4" class="yt-player" data-video-id="PFwKQO_RbLE"></div>
+          </div>
           <div class="video-title">Milan - NEW SOUL</div>
         </div>
       </div>
 
       <div class="video-card">
         <div class="card-inner">
-          <span class="card-label">MP4-05</span>
-          <video loop muted playsinline controls>
-            <source src="Advertisements/ad5.mp4" type="video/mp4">
-          </video>
+          <span class="card-label">YT-AD-05</span>
+          <div class="embed-container">
+            <div id="ad-player-5" class="yt-player" data-video-id="GmT4Kwx4bjQ"></div>
+          </div>
           <div class="video-title">Milan - Glory N Affection</div>
         </div>
       </div>
 
       <div class="video-card">
         <div class="card-inner">
-          <span class="card-label">MP4-06</span>
-          <video loop muted playsinline controls>
-            <source src="Advertisements/ad6.mp4" type="video/mp4">
-          </video>
+          <span class="card-label">YT-AD-06</span>
+          <div class="embed-container">
+            <div id="ad-player-6" class="yt-player" data-video-id="29HyrY1YMgg"></div>
+          </div>
           <div class="video-title">Trevoski - Campaign</div>
         </div>
       </div>
 
       <div class="video-card">
         <div class="card-inner">
-          <span class="card-label">MP4-07</span>
-          <video loop muted playsinline controls>
-            <source src="Advertisements/ad7.mp4" type="video/mp4">
-          </video>
+          <span class="card-label">YT-AD-07</span>
+          <div class="embed-container">
+            <div id="ad-player-7" class="yt-player" data-video-id="Tbmnq_j4uxk"></div>
+          </div>
           <div class="video-title">Trevoski - G-shock</div>
         </div>
       </div>
@@ -786,7 +769,6 @@
     }
 
     function pauseAllVideos() {
-      document.querySelectorAll('video').forEach(v => v.pause());
       Object.values(ytPlayers).forEach(player => {
         if (player && typeof player.pauseVideo === 'function') {
           player.pauseVideo();
@@ -802,15 +784,10 @@
 
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          const video = entry.target.querySelector('video');
           const ytContainer = entry.target.querySelector('.yt-player');
 
           if (entry.isIntersecting) {
             entry.target.classList.add('active');
-            
-            if (video) {
-              video.play().catch(() => {});
-            }
 
             if (ytContainer && ytPlayers[ytContainer.id]) {
               const player = ytPlayers[ytContainer.id];
@@ -820,10 +797,6 @@
             }
           } else {
             entry.target.classList.remove('active');
-
-            if (video) {
-              video.pause();
-            }
 
             if (ytContainer && ytPlayers[ytContainer.id]) {
               const player = ytPlayers[ytContainer.id];
